@@ -1,30 +1,48 @@
 const express = require("express");
-const mongoose = require("mongoose");
+const auth = require("./auth/authModule.ts");
+
+const bodyParser = require("body-parser");
+
 const url = "mongodb://localhost:27017/auth-test";
-mongoose.connect(url, { useNewUrlParser: true, useCreateIndex: true });
 
-const userModel = require("./schema/user.ts");
-
-const User = mongoose.model("User", userModel);
+const authModule = new auth({ dbUrl: url });
 
 const app = express();
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.get("/", (req, res) => {
   try {
-    const user = new User({
-      firstName: "Aravind",
-      lastName: "Ranjan",
-      email: "aravindcranjan54@gmail.com"
-    });
-    user.save(error => {
-      console.log(error);
-      res.send(error);
-    });
-    // res.send(user);
+    authModule
+      .createUser({
+        firstName: "Aravind",
+        lastName: "C Ranjan",
+        email: "aravindcranjan12@gmail.com",
+        password: "HELLLLOOO"
+      })
+      .then(user => {
+        //handle success here
+        res.send(user);
+      })
+      .catch(err => {
+        //handle error conditions here
+        res.send(err);
+      });
   } catch (err) {
-    console.log(err);
     res.send(err);
   }
+});
+
+app.post("/login", (req, res) => {
+  authModule
+    .login(req.body.email, req.body.password)
+    .then(message => {
+      res.send(message);
+    })
+    .catch(err => {
+      res.send(err);
+    });
 });
 
 app.listen(3000, () => {
