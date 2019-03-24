@@ -3,6 +3,8 @@
 const mongoose = require("mongoose");
 const userModel = require("../schema/user.ts");
 
+const jwt = require("jsonwebtoken");
+
 class authModule {
   constructor(props) {
     this.dbUrl = props.dbUrl;
@@ -24,11 +26,13 @@ class authModule {
     );
   }
   initiateUserSchema() {
+    //export as a model from userModel
     const User = mongoose.model("User", userModel);
     return User;
   }
 
   createUser(user) {
+    //move to Async/Await for a much cleaner approach
     return new Promise((resolve, reject) => {
       const newUser = new this.User(user);
       newUser.save(error => {
@@ -41,6 +45,8 @@ class authModule {
     });
   }
   login(email, password) {
+    //move to Async/Await for a much cleaner approach
+
     return new Promise((resolve, reject) => {
       this.User.findOne({ email: email }, (error, user) => {
         if (error) {
@@ -52,7 +58,14 @@ class authModule {
                 reject(err);
               }
               if (isMatch) {
-                resolve({ msg: "Password Successfully verified", user: user });
+                const accessToken = jwt.sign({ data: user }, "SECRET", {
+                  expiresIn: "1h" //change it from user perspective
+                });
+                resolve({
+                  msg: "Password Successfully verified",
+                  user: user,
+                  acessToken: accessToken
+                });
               } else {
                 resolve({ msg: "Wrong Password" });
               }
@@ -63,6 +76,14 @@ class authModule {
         }
       });
     });
+  }
+  validateToken(token) {
+    try {
+      const decoded = jwt.verify(token, "SECRET");
+      return decoded.data;
+    } catch (err) {
+      return err;
+    }
   }
 }
 

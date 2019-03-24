@@ -44,6 +44,10 @@ app.post("/login", (req, res) => {
       res.send(err);
     });
 });
+app.post("/validate", (req, res) => {
+  const user = authModule.validateToken(req.body.token);
+  res.send(user);
+});
 
 app.listen(3000, () => {
   console.log("App Listening at PORT 3000");
