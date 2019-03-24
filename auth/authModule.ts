@@ -34,18 +34,12 @@ class authModule {
       const user = await User.findOne({ email: email });
       if (user) {
         const match = await user.comparePassword(password);
-        if (match) {
-          const accessToken = jwt.sign({ data: user }, "SECRET", {
-            expiresIn: "1h" //change it from user perspective
-          });
-          return {
-            message: "Password Successfully verified",
-            user: user,
-            acessToken: accessToken
-          };
-        }
         return {
-          message: "Wrong password"
+          message: match ? "password Successfully verified" : "Wrong password",
+          user: match ? user : null,
+          accessToken: match
+            ? jwt.sign({ data: user }, "SECRET", { expiresIn: "1h" })
+            : null
         };
       }
       return {
