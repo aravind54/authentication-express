@@ -1,6 +1,6 @@
 "use strict";
 
-//Libraries
+// Libraries
 declare function require(name: string): any;
 
 const mongo = require("mongoose");
@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const redis = require("redis");
 const { promisify } = require("util");
 
-//user Model
+// user Model
 const User = require("../schema/user.ts");
 
 type Props = {
