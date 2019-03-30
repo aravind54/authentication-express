@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //   })
 // );
 
-app.get("/", authModule.authenticateUser(), (req, res) => {
+app.get("/", authModule.authenticateUser("5c9fbba2e02abd3b0ad5cbcb"), (req, res) => {
   try {
     authModule
       .createUser({
