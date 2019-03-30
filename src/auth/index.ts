@@ -1,7 +1,9 @@
 "use strict";
 
 //Libraries
-const mongoose = require("mongoose");
+declare function require(name: string): any;
+
+const mongo = require("mongoose");
 const jwt = require("jsonwebtoken");
 const redis = require("redis");
 const { promisify } = require("util");
@@ -9,8 +11,27 @@ const { promisify } = require("util");
 //user Model
 const User = require("../schema/user.ts");
 
+type Props = {
+  dbUrl: string;
+  jwtSecret: string;
+  expiresIn: string;
+  serverSideSession: boolean;
+  redisUrl: string;
+};
+
+type verifyUser = {
+  match: boolean;
+  user: any;
+};
+
 class authModule {
-  constructor(props) {
+  jwtSecret: string;
+  expiresIn: string;
+  redisClient: any;
+  getAsync: any;
+  login: any;
+  authenticateUser: any;
+  constructor(props: Props) {
     if (!props.dbUrl) throw "Please provide a mongodb url";
     this.jwtSecret = props.jwtSecret ? props.jwtSecret : "SECRET";
     this.expiresIn = props.expiresIn ? props.expiresIn : "1h";
@@ -25,9 +46,9 @@ class authModule {
       this.authenticateUser = this.authenticateUserForJwt.bind(this);
     }
   }
-  connectDb(url) {
+  connectDb(url: string) {
     try {
-      return mongoose.connect(url, {
+      return mongo.connect(url, {
         useNewUrlParser: true,
         useCreateIndex: true,
       });
@@ -36,15 +57,15 @@ class authModule {
     }
   }
 
-  checkRedisConnection(url) {
+  checkRedisConnection(url: string) {
     const redisClient = redis.createClient(url);
-    redisClient.on("error", error => {
+    redisClient.on("error", (error: any) => {
       throw error;
     });
     return redisClient;
   }
 
-  async verifyRedisToken(token) {
+  async verifyRedisToken(token: string) {
     try {
       const accessToken = await this.getAsync(token);
       return this.validateJWTtoken(accessToken);
@@ -53,7 +74,7 @@ class authModule {
     }
   }
 
-  authenticateUserForServerSideSession(token) {
+  authenticateUserForServerSideSession(token: string): any {
     if (!this.redisClient) throw "Issue with Redis Connection.Please provide redisUrl";
     return async (_, res, next) => {
       if (token) {
@@ -73,7 +94,7 @@ class authModule {
     };
   }
 
-  authenticateUserForJwt(token) {
+  authenticateUserForJwt(token: string) {
     return async (_, res, next) => {
       if (token) {
         try {
@@ -92,7 +113,7 @@ class authModule {
     };
   }
 
-  async createUser(user) {
+  async createUser(user: any) {
     try {
       const newUser = new User(user);
       return await newUser.save();
@@ -101,7 +122,7 @@ class authModule {
     }
   }
 
-  async verifyUsernameAndPassword(email, password) {
+  async verifyUsernameAndPassword(email: string, password: string): Promise<verifyUser> {
     try {
       const user = await User.findOne({ email: email });
       if (user) {
@@ -111,16 +132,20 @@ class authModule {
           user: user,
         };
       }
+      return {
+        match: false,
+        user: null,
+      };
     } catch (err) {
       throw err;
     }
   }
 
-  jwtSign(user) {
+  jwtSign(user: any) {
     return jwt.sign({ data: user }, this.jwtSecret, { expiresIn: this.expiresIn });
   }
 
-  async serverSideSessionLogin(email, password) {
+  async serverSideSessionLogin(email: string, password: string) {
     try {
       const { match, user } = await this.verifyUsernameAndPassword(email, password);
       const accessToken = this.jwtSign(user);
@@ -135,7 +160,7 @@ class authModule {
     }
   }
 
-  async loginForJWT(email, password) {
+  async loginForJWT(email: string, password: string) {
     try {
       const { match, user } = await this.verifyUsernameAndPassword(email, password);
       if (match) {
@@ -155,7 +180,7 @@ class authModule {
     }
   }
 
-  validateJWTtoken(token) {
+  validateJWTtoken(token: string) {
     try {
       const decoded = jwt.verify(token, this.jwtSecret);
       return decoded.data;

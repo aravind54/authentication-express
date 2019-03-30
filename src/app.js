@@ -1,5 +1,5 @@
 const express = require("express");
-const auth = require("./auth/authModule.ts");
+const auth = require("./auth/index.ts");
 
 const bodyParser = require("body-parser");
 
