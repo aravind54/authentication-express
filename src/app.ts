@@ -4,8 +4,9 @@ const auth = require("./auth/authModule.ts");
 const bodyParser = require("body-parser");
 
 const url = "mongodb://localhost:27017/auth-test";
+const redisUrl = "redis://127.0.0.1:6379";
 
-const authModule = new auth({ dbUrl: url });
+const authModule = new auth({ dbUrl: url, redisUrl: redisUrl, jwtSecret: "SECRET", serverSideSession: true });
 
 const app = express();
 
@@ -51,7 +52,8 @@ app.post("/login", (req, res) => {
     });
 });
 app.post("/validate", (req, res) => {
-  const user = authModule.validateToken(req.body.token);
+  const user = authModule.validateJWTtoken(req.body.token);
+  console.log(user);
   res.send(user);
 });
 
