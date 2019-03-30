@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //   })
 // );
 
-app.get("/", authModule.setCookie("secret"), (req, res) => {
+app.get("/", authModule.authenticateUser(), (req, res) => {
   try {
     authModule
       .createUser({

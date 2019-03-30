@@ -24,7 +24,7 @@ class authModule {
     }
   }
 
-  setCookie(options) {
+  authenticateUser() {
     //Rename it as validateLogin or authenticateUser
     //setCookie on Login if User wants it which he sets it up in Options.Default Value will be JWT
     //if session he can provide redis url which will be used to provide session storage,default will be mongodb storage which is required
@@ -35,7 +35,6 @@ class authModule {
     //Need to write as a express middleware.Make sure everything else works too(not now.Maybe in next version)
     //use req.session variable.or not something which can be used to find by end user?
 
-    console.log(options);
     return (req, res, next) => {
       if (req.session) next();
       else {
