@@ -12,7 +12,13 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => {
+// app.use(
+//   authModule.setCookie({
+//     secret: "SECRET"
+//   })
+// );
+
+app.get("/", authModule.setCookie("secret"), (req, res) => {
   try {
     authModule
       .createUser({

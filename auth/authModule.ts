@@ -1,9 +1,12 @@
 "use strict";
 
+//Libraries
 const mongoose = require("mongoose");
-const User = require("../schema/user.ts");
-
+const cookie = require("cookie");
 const jwt = require("jsonwebtoken");
+
+//user Model
+const User = require("../schema/user.ts");
 
 class authModule {
   constructor(props) {
@@ -19,6 +22,27 @@ class authModule {
     } catch (err) {
       throw err;
     }
+  }
+
+  setCookie(options) {
+    //Rename it as validateLogin or authenticateUser
+    //setCookie on Login if User wants it which he sets it up in Options.Default Value will be JWT
+    //if session he can provide redis url which will be used to provide session storage,default will be mongodb storage which is required
+    //cookie npm module will be used to setHeaders and parseHeaders in server side session storage
+    //secure:true,re sign cookie everytime or different jwt everytime
+    //mongo or redis storage will have userid saved and signed and stored.Nothing else is required
+    //secure:true needs to have update for new session storage as re-sign will be there
+    //Need to write as a express middleware.Make sure everything else works too(not now.Maybe in next version)
+    //use req.session variable.or not something which can be used to find by end user?
+
+    console.log(options);
+    return (req, res, next) => {
+      if (req.session) next();
+      else {
+        console.log("Inside here");
+        next();
+      }
+    };
   }
 
   async createUser(user) {
