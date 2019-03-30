@@ -25,7 +25,7 @@ app.get("/", authModule.setCookie("secret"), (req, res) => {
         firstName: "Aravind",
         lastName: "C Ranjan",
         email: "aravindcranjan12@gmail.com",
-        password: "HELLLLOOO"
+        password: "HELLLLOOO",
       })
       .then(user => {
         //handle success here

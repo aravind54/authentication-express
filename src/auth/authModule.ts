@@ -17,7 +17,7 @@ class authModule {
     try {
       return mongoose.connect(this.dbUrl, {
         useNewUrlParser: true,
-        useCreateIndex: true
+        useCreateIndex: true,
       });
     } catch (err) {
       throw err;
@@ -59,15 +59,13 @@ class authModule {
       if (user) {
         const match = await user.comparePassword(password);
         return {
-          message: match ? "password Successfully verified" : "Wrong password",
+          message: match ? "Password Successfully verified" : "Wrong password",
           user: match ? user : null,
-          accessToken: match
-            ? jwt.sign({ data: user }, "SECRET", { expiresIn: "1h" })
-            : null
+          accessToken: match ? jwt.sign({ data: user }, "SECRET", { expiresIn: "1h" }) : null,
         };
       }
       return {
-        message: "No User found with that email"
+        message: "No User found with that email",
       };
     } catch (err) {
       throw err;

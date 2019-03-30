@@ -18,8 +18,8 @@ const userSchema = new schema({
         }
         return false;
       },
-      message: props => "Please provide a non empty password"
-    }
+      message: props => "Please provide a non empty password",
+    },
   },
   email: {
     type: String,
@@ -27,21 +27,21 @@ const userSchema = new schema({
     lowercase: true,
     index: {
       unique: true,
-      dropDups: true
+      dropDups: true,
     },
-    required: true
+    required: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
   },
   updatedAt: {
-    type: Date
-  }
+    type: Date,
+  },
 });
 
 userSchema.index({
-  email: 1
+  email: 1,
 });
 
 userSchema.pre("save", function(next) {
