@@ -12,13 +12,13 @@ const userSchema = new schema({
     type: String,
     required: [true, "Password is required"],
     validate: {
-      validator: function(v: any) {
+      validator: function(v) {
         if (v.length >= 6) {
           return true;
         }
         return false;
       },
-      message: (props: any) => "Please provide a non empty password",
+      message: props => "Please provide a non empty password",
     },
   },
   email: {
@@ -44,14 +44,14 @@ userSchema.index({
   email: 1,
 });
 
-userSchema.pre("save", function(next: any): any {
-  let user: any = this;
+userSchema.pre("save", function(next) {
+  let user = this;
   if (!user.isModified("password")) return next();
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(err: any, salt: any) {
+  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
     if (err) return next(err);
 
     // hash the password using our new salt
-    bcrypt.hash(user.password, salt, function(err: any, hash: any) {
+    bcrypt.hash(user.password, salt, function(err, hash) {
       if (err) return next(err);
 
       // override the cleartext password with the hashed one
@@ -62,7 +62,7 @@ userSchema.pre("save", function(next: any): any {
   });
 });
 
-userSchema.methods.comparePassword = async function(candidatePassword: string) {
+userSchema.methods.comparePassword = async function(candidatePassword) {
   try {
     const match = await bcrypt.compare(candidatePassword, this.password);
     return match;
